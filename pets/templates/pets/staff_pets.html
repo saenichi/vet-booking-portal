@@ -1,0 +1,58 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 bg-white border rounded shadow-sm p-4 text-center">
+        <h1 class="fw-bold text-dark mb-1">Pet Records</h1>
+        <p class="text-muted small mb-4">Search registered patient pets by pet name or owner name.</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <form method="GET" action="{% url 'staff_pets' %}" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control" placeholder="Search pet name or owner name..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-dark fw-bold px-4">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'staff_pets' %}" class="btn btn-outline-secondary">Reset</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm p-4 bg-white">
+            <h4 class="fw-bold text-dark mb-3 border-bottom pb-2">Registered Patient Pets & Owner Details</h4>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Pet Name</th>
+                            <th>Species</th>
+                            <th>Owner Full Name</th>
+                            <th>Owner Phone</th>
+                            <th>Registered Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                            <tr>
+                                <td class="fw-bold text-primary">{{ pet.name }}</td>
+                                <td>{{ pet.species }}</td>
+                                <td class="fw-semibold">{{ pet.owner_name }}</td>
+                                <td>{{ pet.owner_phone }}</td>
+                                <td class="text-muted small">{{ pet.registered_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No registered pets found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

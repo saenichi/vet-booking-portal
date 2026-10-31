@@ -1,0 +1,21 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white fw-bold text-center py-3">Register a New Patient Pet</div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ pet_form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100 fw-bold mt-3 py-2">Save & Register Pet</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="{% url 'dashboard' %}" class="text-decoration-none text-muted small">&larr; Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

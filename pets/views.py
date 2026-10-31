@@ -1,0 +1,202 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Q
+from .models import Pet, Appointment
+from .forms import UserRegistrationForm, PetRegistrationForm, AppointmentBookingForm
+
+def is_staff_user(user):
+    return user.is_staff
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('staff_dashboard' if request.user.is_staff else 'dashboard')
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            return redirect('staff_dashboard' if user.is_staff else 'dashboard')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'pets/login.html', {'form': form})
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Account created successfully!")
+            return redirect('dashboard')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'pets/register.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required(login_url='login')
+def dashboard_view(request):
+    if request.user.is_staff:
+        return redirect('staff_dashboard')
+    
+    user_pets = Pet.objects.filter(
+        Q(owner_username__iexact=request.user.username) | 
+        Q(owner_name__iexact=request.user.username) |
+        Q(owner_name__iexact=request.user.get_full_name())
+    ).distinct()
+    
+    user_appointments = Appointment.objects.filter(pet__in=user_pets).order_by('-date')
+    full_name = request.user.get_full_name() or request.user.username
+
+    return render(request, 'pets/dashboard.html', {
+        'my_pets': user_pets,
+        'my_appointments': user_appointments,
+        'full_name': full_name
+    })
+
+@login_required(login_url='login')
+def register_pet_view(request):
+    if request.user.is_staff:
+        return redirect('staff_dashboard')
+    
+    default_owner = request.user.get_full_name() or request.user.username
+    pet_form = PetRegistrationForm(initial={'owner_name': default_owner})
+    
+    if request.method == 'POST':
+        pet_form = PetRegistrationForm(request.POST)
+        if pet_form.is_valid():
+            pet = pet_form.save(commit=False)
+            pet.owner_username = request.user.username
+            pet.owner_name = default_owner
+            pet.save()
+            messages.success(request, f"Pet '{pet.name}' successfully registered under your account!")
+            return redirect('dashboard')
+    return render(request, 'pets/register_pet.html', {'pet_form': pet_form})
+
+@login_required(login_url='login')
+def book_appointment_view(request):
+    if request.user.is_staff:
+        return redirect('staff_dashboard')
+    
+    user_pets = Pet.objects.filter(
+        Q(owner_username__iexact=request.user.username) | 
+        Q(owner_name__iexact=request.user.username) |
+        Q(owner_name__iexact=request.user.get_full_name())
+    ).distinct()
+    
+    user_appointments = Appointment.objects.filter(pet__in=user_pets).order_by('-date')
+
+    appointment_form = AppointmentBookingForm()
+    appointment_form.fields['pet'].queryset = user_pets
+
+    if request.method == 'POST':
+        appointment_form = AppointmentBookingForm(request.POST)
+        appointment_form.fields['pet'].queryset = user_pets
+        
+        if appointment_form.is_valid():
+            chosen_date = appointment_form.cleaned_data.get('date')
+            chosen_slot = appointment_form.cleaned_data.get('time_slot')
+            
+            daily_total = Appointment.objects.filter(date=chosen_date, status='Approved').count()
+            slot_total = Appointment.objects.filter(date=chosen_date, time_slot=chosen_slot, status='Approved').count()
+            
+            if daily_total >= 200:
+                messages.error(request, f"The date {chosen_date} has reached the maximum limit of 200 patients.")
+            elif slot_total >= 10:
+                messages.error(request, f"The time slot {chosen_slot} on {chosen_date} is fully booked (10/10 capacity).")
+            else:
+                appointment = appointment_form.save(commit=False)
+                appointment.status = 'Pending'
+                appointment.save()
+                messages.success(request, f"Appointment requested for {chosen_date} at {chosen_slot}! Pending staff review.")
+                return redirect('book_appointment')
+                
+    return render(request, 'pets/book_appointment.html', {
+        'appointment_form': appointment_form,
+        'user_appointments': user_appointments,
+        'user_pets': user_pets
+    })
+
+@login_required(login_url='login')
+@user_passes_test(is_staff_user, login_url='dashboard')
+def staff_dashboard_view(request):
+    search_query = request.GET.get('search', '')
+    pending_appointments = Appointment.objects.filter(status='Pending').order_by('-date')
+    matched_pets = Pet.objects.none()
+
+    if search_query:
+        pending_appointments = pending_appointments.filter(
+            Q(pet__name__icontains=search_query) | 
+            Q(pet__owner_name__icontains=search_query) |
+            Q(date__icontains=search_query)
+        )
+        matched_pets = Pet.objects.filter(
+            Q(name__icontains=search_query) | 
+            Q(owner_name__icontains=search_query) |
+            Q(species__icontains=search_query)
+        )
+
+    return render(request, 'pets/staff_dashboard.html', {
+        'pending_appointments': pending_appointments,
+        'matched_pets': matched_pets,
+        'search_query': search_query
+    })
+
+@login_required(login_url='login')
+@user_passes_test(is_staff_user, login_url='dashboard')
+def staff_pets_view(request):
+    search_query = request.GET.get('search', '')
+    pets = Pet.objects.all().order_by('-registered_at')
+
+    if search_query:
+        pets = pets.filter(
+            Q(name__icontains=search_query) | 
+            Q(owner_name__icontains=search_query)
+        )
+
+    return render(request, 'pets/staff_pets.html', {
+        'pets': pets,
+        'search_query': search_query
+    })
+
+@login_required(login_url='login')
+@user_passes_test(is_staff_user, login_url='dashboard')
+def staff_appointments_view(request):
+    search_date = request.GET.get('date', '')
+    status_filter = request.GET.get('status', '')
+
+    appointments = Appointment.objects.none()
+
+    if search_date:
+        # Filter by exact date and status
+        appointments = Appointment.objects.filter(date=search_date)
+        if status_filter:
+            appointments = appointments.filter(status__iexact=status_filter)
+        appointments = appointments.order_by('-date')
+
+    return render(request, 'pets/staff_appointments.html', {
+        'appointments': appointments,
+        'search_date': search_date,
+        'status_filter': status_filter
+    })
+
+@login_required(login_url='login')
+@user_passes_test(is_staff_user, login_url='dashboard')
+def approve_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    slot_total = Appointment.objects.filter(date=appointment.date, time_slot=appointment.time_slot, status='Approved').count()
+    
+    if slot_total >= 10:
+        messages.error(request, f"Cannot approve. The {appointment.time_slot} slot on {appointment.date} reached max 10 limit.")
+    else:
+        appointment.status = 'Approved'
+        appointment.save()
+        messages.success(request, f"Appointment for {appointment.pet.name} approved successfully.")
+        
+    return redirect('staff_dashboard')

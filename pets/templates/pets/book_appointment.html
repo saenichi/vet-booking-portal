@@ -1,0 +1,91 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12 bg-white border rounded shadow-sm p-4 text-center">
+        <h2 class="fw-bold text-success mb-2">Schedule a Veterinary Visit</h2>
+        <p class="text-muted mb-0">Select your registered pet and choose an available date and time slot for examination.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm bg-white">
+            <div class="card-header bg-success text-white fw-bold py-3">Appointment Request Form</div>
+            <div class="card-body p-4">
+                {% if user_pets %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Pet:</label>
+                            {{ appointment_form.pet }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Date:</label>
+                            {{ appointment_form.date }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Time slot:</label>
+                            {{ appointment_form.time_slot }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Reason:</label>
+                            {{ appointment_form.reason }}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 fw-bold py-2 mt-2">Submit Appointment Request</button>
+                    </form>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-3">You do not have any registered pets under your account yet.</p>
+                        <a href="{% url 'register_pet' %}" class="btn btn-outline-primary fw-bold">Register a Pet First</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Scheduled Appointments Panel -->
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm bg-white p-4">
+            <h4 class="fw-bold text-dark mb-3">Upcoming Appointments</h4>
+            <ul class="list-group list-group-flush">
+                {% for appt in user_appointments %}
+                    <li class="list-group-item px-0 py-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="fs-6 text-dark">{{ appt.pet.name }} ({{ appt.pet.species }})</strong>
+                            <span class="badge {% if appt.status == 'Approved' %}bg-success{% else %}bg-warning text-dark{% endif %} p-2">
+                                {{ appt.status }}
+                            </span>
+                        </div>
+                        <div class="text-muted small">
+                            <strong>Date:</strong> {{ appt.date }} &nbsp;|&nbsp; <strong>Time Slot:</strong> {{ appt.time_slot }}
+                        </div>
+                        <div class="text-secondary small mt-1">
+                            <strong>Reason:</strong> {{ appt.reason }}
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item px-0 text-muted small border-0">No appointments scheduled under your account.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

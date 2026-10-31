@@ -1,0 +1,148 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- 1. Homepage Hero Banner -->
+<div class="row mb-4">
+    <div class="col-12 bg-white border rounded shadow-sm p-5">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h1 class="fw-bold text-primary mb-3">Exceptional Pet Care & Professional Medicine</h1>
+                <p class="text-muted lead mb-0">
+                    We care for your pets as we would our own. Access compassionate veterinary services, manage patient registrations, and schedule secure visits online.
+                </p>
+            </div>
+            <div class="col-md-5 text-center mt-4 mt-md-0">
+                <div class="p-4 border rounded bg-light">
+                    <h5 class="fw-bold text-dark mb-2">🐾 City Pet Hospital Portal</h5>
+                    <p class="text-muted small mb-0">Your centralized hub for veterinary care and appointment tracking.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Banner -->
+<div class="row mb-4">
+    <div class="col-12 text-center py-4 px-3 bg-white border rounded shadow-sm">
+        <p class="fs-4 fw-semibold text-dark fst-italic mb-1">
+            “Until one has loved an animal, a part of one's soul remains unawakened.”
+        </p>
+        <span class="text-muted small fw-bold">— Anatole France</span>
+    </div>
+</div>
+
+<!-- 2. Centered Quick Actions Panel -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm p-4 bg-white text-center">
+            <h4 class="fw-bold text-primary mb-2">Portal Quick Actions</h4>
+            <p class="text-muted small mb-4">Manage your patient appointments or register new pets to the system instantly using the actions below.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'register_pet' %}" class="btn btn-outline-primary fw-bold px-4 py-2">
+                    Register Pet
+                </a>
+                <a href="{% url 'book_appointment' %}" class="btn btn-success fw-bold px-4 py-2">
+                    Schedule Visit
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Redesigned Clinic Schedule & Emergency Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-white h-100 text-center">
+            <h6 class="text-uppercase fw-bold text-muted small mb-2">Regular Operating Hours</h6>
+            <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
+            <small class="text-muted">Monday to Sunday</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-white h-100 text-center">
+            <h6 class="text-uppercase fw-bold text-muted small mb-2">Appointment Slots</h6>
+            <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
+            <small class="text-muted">Hourly Bookings Available</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-white h-100 text-center">
+            <h6 class="text-uppercase fw-bold text-muted small mb-2">After Hours Emergency</h6>
+            <h5 class="fw-bold text-danger mb-1">6:00 PM – 8:00 AM</h5>
+            <small class="text-danger fw-semibold">24/7 Hotline Active</small>
+        </div>
+    </div>
+</div>
+
+<!-- Client Private Records (My Pets & Dropdown Accordion Appointments) -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 p-4 bg-white">
+            <h4 class="fw-bold text-dark mb-3">My Registered Pets</h4>
+            <div class="overflow-auto pe-2" style="max-height: 280px;">
+                <ul class="list-group list-group-flush">
+                    {% for pet in my_pets %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>{{ pet.name }}</strong> ({{ pet.species }})
+                            </div>
+                            <span class="badge bg-secondary">Registered</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted small">No pets registered under your account yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-dark mb-0">My Scheduled Appointments</h4>
+                <span class="badge bg-primary rounded-pill">{{ my_appointments|length }}</span>
+            </div>
+
+            <!-- Dropdown Accordion Container -->
+            <div class="accordion accordion-flush" id="appointmentAccordion">
+                <div class="accordion-item border rounded">
+                    <h2 class="accordion-header" id="headingAppointments">
+                        <button class="accordion-button collapsed fw-bold text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAppointments" aria-expanded="false" aria-controls="collapseAppointments">
+                            View Appointment List
+                        </button>
+                    </h2>
+                    <div id="collapseAppointments" class="accordion-collapse collapse" aria-labelledby="headingAppointments" data-bs-parent="#appointmentAccordion">
+                        <div class="accordion-body p-0 overflow-auto" style="max-height: 240px;">
+                            <ul class="list-group list-group-flush">
+                                {% for appt in my_appointments %}
+                                    <li class="list-group-item px-3 py-2 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong>{{ appt.pet.name }}</strong>
+                                            <span class="badge {% if appt.status == 'Approved' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                                {{ appt.status }}
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">Date: {{ appt.date }} | Time: {{ appt.time_slot }}</small>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item px-3 text-muted small">No appointments booked yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
