@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from .models import Pet, Appointment
-from .forms import UserRegistrationForm, PetRegistrationForm, AppointmentBookingForm
+from .forms import UserRegistrationForm, PetRegistrationForm, AppointmentBookingForm, UserInfoUpdateForm, UserPasswordChangeForm
 
 def is_staff_user(user):
     return user.is_staff
@@ -39,6 +39,34 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required(login_url='login')
+def profile_update_view(request):
+    info_form = UserInfoUpdateForm(instance=request.user)
+    password_form = UserPasswordChangeForm(user=request.user)
+
+    if request.method == 'POST':
+        if 'update_info' in request.POST:
+            info_form = UserInfoUpdateForm(request.POST, instance=request.user)
+            if info_form.is_valid():
+                info_form.save()
+                messages.success(request, "Account information updated successfully!")
+                return redirect('profile_update')
+        
+        elif 'update_password' in request.POST:
+            password_form = UserPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                new_pwd = password_form.cleaned_data.get('new_password')
+                request.user.set_password(new_pwd)
+                request.user.save()
+                update_session_auth_hash(request, request.user)
+                messages.success(request, "Password updated successfully!")
+                return redirect('profile_update')
+
+    return render(request, 'pets/profile_update.html', {
+        'info_form': info_form,
+        'password_form': password_form
+    })
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -174,7 +202,6 @@ def staff_appointments_view(request):
     appointments = Appointment.objects.none()
 
     if search_date:
-        # Filter by exact date and status
         appointments = Appointment.objects.filter(date=search_date)
         if status_filter:
             appointments = appointments.filter(status__iexact=status_filter)

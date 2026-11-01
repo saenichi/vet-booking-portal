@@ -31,6 +31,38 @@ class UserRegistrationForm(forms.ModelForm):
             user.save()
         return user
 
+class UserInfoUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class UserPasswordChangeForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Current Password")
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="New Password")
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm New Password")
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        op = cleaned_data.get("old_password")
+        np = cleaned_data.get("new_password")
+        cp = cleaned_data.get("confirm_new_password")
+
+        if op and not self.user.check_password(op):
+            raise forms.ValidationError("Current password is incorrect.")
+        if np and cp and np != cp:
+            raise forms.ValidationError("New passwords do not match.")
+        return cleaned_data
+
 class PetRegistrationForm(forms.ModelForm):
     class Meta:
         model = Pet

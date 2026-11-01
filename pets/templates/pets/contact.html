@@ -1,0 +1,101 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 rounded-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container my-4">
+    
+    <!-- Contact Heading / Header info -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary mb-2">Compassionate Care for Your Beloved Animal Companions</h1>
+        <p class="text-muted">Welcome to Vet Oasis. Your trusted digital portal for streamlined pet registrations, professional veterinary consultations, and secure online appointment booking.</p>
+    </div>
+
+    <!-- Operating Hours Cards (Exact match to second reference) -->
+    <div class="row g-4 mb-5 justify-content-center">
+        <div class="col-md-4">
+            <div class="card border rounded-3 p-4 text-center h-100 shadow-sm bg-white">
+                <span class="text-uppercase small fw-bold text-secondary mb-2">Regular Operating Hours</span>
+                <h4 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h4>
+                <p class="text-muted small mb-0">Monday to Sunday</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border rounded-3 p-4 text-center h-100 shadow-sm bg-white">
+                <span class="text-uppercase small fw-bold text-secondary mb-2">Appointment Slots</span>
+                <h4 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h4>
+                <p class="text-muted small mb-0">Hourly Bookings Available</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border rounded-3 p-4 text-center h-100 shadow-sm bg-white">
+                <span class="text-uppercase small fw-bold text-secondary mb-2">After Hours Emergency</span>
+                <h4 class="fw-bold text-danger mb-1">6:00 PM – 8:00 AM</h4>
+                <p class="text-danger small mb-0 fw-semibold">24/7 Hotline Active</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Details & PH Info -->
+    <div class="row mb-5 justify-content-center">
+        <div class="col-lg-8 text-center">
+            <p class="mb-1"><strong>Telephone:</strong> <span class="text-secondary">+63 912 345 6789</span></p>
+            <p class="mb-1"><strong>Email:</strong> <span class="text-primary">support@vetoasis.com</span></p>
+            <p class="mb-0"><strong>Address:</strong> <span class="text-secondary">Cainta, Rizal, Philippines</span></p>
+        </div>
+    </div>
+
+    <hr class="my-5 text-muted">
+
+    <!-- Contact Form Section (Matching exact field labels from third screenshot) -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label class="form-label text-muted small">First Name <span class="text-danger">(required)</span></label>
+                        <input type="text" name="first_name" class="form-control rounded-2" required value="{{ request.user.first_name }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Last Name <span class="text-danger">(required)</span></label>
+                        <input type="text" name="last_name" class="form-control rounded-2" required value="{{ request.user.last_name }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Email <span class="text-danger">(required)</span></label>
+                    <input type="email" name="email" class="form-control rounded-2" required value="{{ request.user.email }}">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input rounded-0" type="checkbox" id="newsCheck">
+                        <label class="form-check-label text-muted small" for="newsCheck">
+                            Sign up for news and updates
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Subject <span class="text-danger">(required)</span></label>
+                    <input type="text" name="subject" class="form-control rounded-2" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small">Message <span class="text-danger">(required)</span></label>
+                    <textarea name="message" rows="5" class="form-control rounded-2" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-outline-secondary px-4 py-2 rounded-2 fw-bold text-dark">Submit</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
