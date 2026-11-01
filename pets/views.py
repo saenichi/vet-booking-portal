@@ -225,5 +225,8 @@ def approve_appointment_view(request, pk):
         appointment.status = 'Approved'
         appointment.save()
         messages.success(request, f"Appointment for {appointment.pet.name} approved successfully.")
-        
     return redirect('staff_dashboard')
+
+@login_required(login_url='login')
+def contact_us_view(request):
+    return render(request, 'pets/contact.html')

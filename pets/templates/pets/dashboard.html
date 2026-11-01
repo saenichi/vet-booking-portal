@@ -15,7 +15,7 @@
     <div class="col-12 bg-white border rounded shadow-sm p-5 text-center">
         <div class="row justify-content-center">
             <div class="col-lg-10 py-4">
-                
+               
                 <!-- Primary Heading (Single line responsive) -->
                 <h1 class="fw-bold text-primary mb-3 text-nowrap" style="font-size: clamp(1.5rem, 2.5vw, 2.3rem);">
                     Compassionate Care for Your Beloved Animal Companions
@@ -26,12 +26,14 @@
                     Welcome to Vet Oasis. Your trusted digital portal for streamlined pet registrations, professional veterinary consultations, and secure online appointment booking.
                 </p>
 
-                <!-- "Main Character" Small, Balanced Vet Oasis Box Pushed Down Near Border -->
+                <!-- Clickable "Vet Oasis" Box -->
                 <div class="row justify-content-center mt-4">
                     <div class="col-md-4 col-lg-3">
-                        <div class="py-2 px-3 border rounded bg-light text-center shadow-sm" style="opacity: 0.95;">
-                            <span class="fw-semibold text-secondary small text-uppercase tracking-wide" style="font-size: 0.9rem; letter-spacing: 0.5px;">Vet Oasis</span>
-                        </div>
+                        <a href="{% url 'contact_us' %}" class="text-decoration-none">
+                            <div class="py-2 px-3 border rounded bg-light text-center shadow-sm" style="opacity: 0.95; transition: background-color 0.2s;">
+                                <span class="fw-semibold text-secondary small text-uppercase tracking-wide" style="font-size: 0.9rem; letter-spacing: 0.5px;">Vet Oasis</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -93,10 +95,10 @@
     </div>
 </div>
 
-<!-- Client Private Records (Centered Stacked Layout: Scheduled Appointments on Top, Registered Pets Followed Underneath with Generous Space) -->
+<!-- Client Private Records -->
 <div class="row justify-content-center mb-5">
     <div class="col-lg-9">
-        
+       
         <!-- My Scheduled Appointments Section -->
         <div class="bg-white border rounded shadow-sm p-5 mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -135,7 +137,7 @@
             </div>
         </div>
 
-        <!-- My Registered Pets Section (Centered Directly Underneath with Rounded Border & Spacious Layout) -->
+        <!-- My Registered Pets Section -->
         <div class="bg-white border rounded shadow-sm p-5">
             <h4 class="fw-bold text-dark mb-4">My Registered Pets</h4>
             <div class="overflow-auto pe-2" style="max-height: 320px;">
@@ -143,7 +145,7 @@
                     {% for pet in my_pets %}
                         <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-3 border-bottom">
                             <div>
-                                <strong class="fs-5 text-dark">{{ pet.name }}</strong> 
+                                <strong class="fs-5 text-dark">{{ pet.name }}</strong>
                                 <span class="text-muted">({{ pet.species }})</span>
                             </div>
                             <span class="badge bg-secondary px-3 py-2">Registered</span>
