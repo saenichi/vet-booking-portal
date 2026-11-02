@@ -11,86 +11,108 @@
 {% endif %}
 
 <!-- 1. Homepage Hero Banner -->
-<div class="row mb-5">
-    <div class="col-12 bg-white border rounded shadow-sm p-5 text-center">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 py-4">
-               
-                <!-- Primary Heading (Single line responsive) -->
-                <h1 class="fw-bold text-primary mb-3 text-nowrap" style="font-size: clamp(1.5rem, 2.5vw, 2.3rem);">
-                    Compassionate Care for Your Beloved Animal Companions
-                </h1>
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-9">
+        <div class="bg-white border rounded shadow-sm pt-5 px-5 pb-4 text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-11 pt-3 pb-3">
+                   
+                    <!-- Primary Heading -->
+                    <h1 class="fw-bold text-primary mb-4 lh-base" style="font-size: clamp(1.5rem, 2.3vw, 2.3rem);">
+                        A Space for Your Beloved Companions
+                    </h1>
 
-                <!-- Short Intro Text -->
-                <p class="text-muted lead mb-5 mx-auto" style="max-width: 750px;">
-                    Welcome to Vet Oasis. Your trusted digital portal for streamlined pet registrations, professional veterinary consultations, and secure online appointment booking.
-                </p>
-
-                <!-- Clickable "Vet Oasis" Box -->
-                <div class="row justify-content-center mt-4">
-                    <div class="col-md-4 col-lg-3">
-                        <a href="{% url 'contact_us' %}" class="text-decoration-none">
-                            <div class="py-2 px-3 border rounded bg-light text-center shadow-sm" style="opacity: 0.95; transition: background-color 0.2s;">
-                                <span class="fw-semibold text-secondary small text-uppercase tracking-wide" style="font-size: 0.9rem; letter-spacing: 0.5px;">Vet Oasis</span>
-                            </div>
-                        </a>
+                    <!-- Intro Text with space away from the blue heading -->
+                    <div class="mt-4 mb-5">
+                        <p class="text-muted lead mb-2 mx-auto" style="max-width: 750px;">
+                            Welcome to Vet Oasis.
+                        </p>
+                        <p class="text-muted lead mb-0 mx-auto" style="max-width: 750px;">
+                            Easily schedule visits, manage your patient bookings, and connect with our staffs.
+                        </p>
                     </div>
-                </div>
 
+                    <!-- Clear gap and space separating the intro from the Need Help section -->
+                    <div class="mt-5 pt-3 mb-2">
+                        <div style="margin-bottom: 0.75rem;">
+                            <span class="text-secondary small text-uppercase fw-semibold d-block" style="line-height: 1.3;">NEED HELP?</span>
+                            <span class="text-secondary small text-uppercase fw-semibold d-block" style="line-height: 1.3;">CLICK HERE FOR ASSISTANCE</span>
+                        </div>
+
+                        <div class="row justify-content-center mt-3">
+                            <div class="col-md-5 col-lg-4">
+                                <a href="{% url 'contact_us' %}" class="text-decoration-none">
+                                    <div class="py-2 px-3 border rounded bg-light text-center shadow-sm" style="opacity: 0.95; transition: background-color 0.2s;">
+                                        <span class="fw-semibold text-secondary small text-uppercase tracking-wide" style="font-size: 0.9rem; letter-spacing: 0.5px;">VET OASIS</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Quote Banner with Animal Silhouettes Background -->
-<div class="row mb-5">
-    <div class="col-12 text-center py-5 px-5 bg-white border rounded shadow-sm position-relative overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url('https://static.vecteezy.com/system/resources/thumbnails/049/054/422/small/african-savanna-safari-with-animals-seamless-border-black-silhouette-illustration-on-white-background-wild-nature-landscape-horizontal-banner-with-elephant-giraffe-not-merged-separate-elements-vector.jpg'); background-size: cover; background-position: center;">
-        <div class="position-relative py-4">
-            <p class="fs-4 fw-semibold text-dark fst-italic mb-2">
-                “Until one has loved an animal, a part of one's soul remains unawakened.”
-            </p>
-            <span class="text-muted small fw-bold">— Anatole France</span>
+<!-- Quote Banner with Veterinary Doctor & Sick Pets Doodle Background (Image by upklyak) -->
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-9">
+        <div class="text-center py-5 px-5 bg-white border rounded shadow-sm position-relative overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('https://img.freepik.com/free-vector/veterinary-clinic-with-doctor-sick-pets_107791-14022.jpg'); background-size: cover; background-position: center;">
+            <div class="position-relative py-4">
+                <p class="fs-4 fw-semibold text-dark fst-italic mb-2">
+                    “Until one has loved an animal, a part of one's soul remains unawakened.”
+                </p>
+                <span class="text-muted small fw-bold">— Anatole France</span>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- 2. Centered Quick Actions Panel -->
-<div class="row mb-5">
-    <div class="col-12 bg-white border rounded shadow-sm p-5 text-center">
-        <h4 class="fw-bold text-primary mb-2">Portal Quick Actions</h4>
-        <p class="text-muted small mb-4 mx-auto" style="max-width: 600px;">Manage your patient appointments or register new pets to the system instantly using the actions below.</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{% url 'register_pet' %}" class="btn btn-outline-primary fw-bold px-4 py-2">
-                Register Pet
-            </a>
-            <a href="{% url 'book_appointment' %}" class="btn btn-success fw-bold px-4 py-2">
-                Schedule Visit
-            </a>
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-9">
+        <div class="bg-white border rounded shadow-sm p-5 text-center">
+            <h4 class="fw-bold text-primary mb-2">Portal Quick Actions</h4>
+            <p class="text-muted small mb-4 mx-auto" style="max-width: 600px;">Manage your patient appointments or register new pets to the system instantly using the actions below.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'register_pet' %}" class="btn btn-outline-primary fw-bold px-4 py-2">
+                    Register Pet
+                </a>
+                <a href="{% url 'book_appointment' %}" class="btn btn-success fw-bold px-4 py-2">
+                    Schedule Visit
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- 3. Redesigned Clinic Schedule & Emergency Cards -->
-<div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
-            <h6 class="text-uppercase fw-bold text-muted small mb-2">Regular Operating Hours</h6>
-            <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
-            <small class="text-muted">Monday to Sunday</small>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
-            <h6 class="text-uppercase fw-bold text-muted small mb-2">Appointment Slots</h6>
-            <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
-            <small class="text-muted">Hourly Bookings Available</small>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
-            <h6 class="text-uppercase fw-bold text-muted small mb-2">After Hours Emergency</h6>
-            <h5 class="fw-bold text-danger mb-1">6:00 PM – 8:00 AM</h5>
-            <small class="text-danger fw-semibold">24/7 Hotline Active</small>
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-9">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
+                    <h6 class="text-uppercase fw-bold text-muted small mb-2">Regular Operating Hours</h6>
+                    <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
+                    <small class="text-muted">Monday to Sunday</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
+                    <h6 class="text-uppercase fw-bold text-muted small mb-2">Appointment Slots</h6>
+                    <h5 class="fw-bold text-dark mb-1">8:00 AM – 6:00 PM</h5>
+                    <small class="text-muted">Hourly Bookings Available</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white border rounded shadow-sm p-4 h-100 text-center">
+                    <h6 class="text-uppercase fw-bold text-muted small mb-2">After Hours Emergency</h6>
+                    <h5 class="fw-bold text-danger mb-1">6:00 PM – 8:00 AM</h5>
+                    <small class="text-danger fw-semibold">24/7 Hotline Active</small>
+                </div>
+            </div>
         </div>
     </div>
 </div>
