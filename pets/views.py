@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate, logout, update_session_auth
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+import json
 from .models import Pet, Appointment
 from .forms import UserRegistrationForm, PetRegistrationForm, AppointmentBookingForm, UserInfoUpdateForm, UserPasswordChangeForm
 
@@ -52,7 +53,6 @@ def profile_update_view(request):
                 info_form.save()
                 messages.success(request, "Account information updated successfully!")
                 return redirect('profile_update')
-        
         elif 'update_password' in request.POST:
             password_form = UserPasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
@@ -72,13 +72,13 @@ def profile_update_view(request):
 def dashboard_view(request):
     if request.user.is_staff:
         return redirect('staff_dashboard')
-    
+   
     user_pets = Pet.objects.filter(
-        Q(owner_username__iexact=request.user.username) | 
+        Q(owner_username__iexact=request.user.username) |
         Q(owner_name__iexact=request.user.username) |
         Q(owner_name__iexact=request.user.get_full_name())
     ).distinct()
-    
+   
     user_appointments = Appointment.objects.filter(pet__in=user_pets).order_by('-date')
     full_name = request.user.get_full_name() or request.user.username
 
@@ -92,10 +92,10 @@ def dashboard_view(request):
 def register_pet_view(request):
     if request.user.is_staff:
         return redirect('staff_dashboard')
-    
+   
     default_owner = request.user.get_full_name() or request.user.username
     pet_form = PetRegistrationForm(initial={'owner_name': default_owner})
-    
+   
     if request.method == 'POST':
         pet_form = PetRegistrationForm(request.POST)
         if pet_form.is_valid():
@@ -111,29 +111,28 @@ def register_pet_view(request):
 def book_appointment_view(request):
     if request.user.is_staff:
         return redirect('staff_dashboard')
-    
+   
     user_pets = Pet.objects.filter(
-        Q(owner_username__iexact=request.user.username) | 
+        Q(owner_username__iexact=request.user.username) |
         Q(owner_name__iexact=request.user.username) |
         Q(owner_name__iexact=request.user.get_full_name())
     ).distinct()
-    
+   
     user_appointments = Appointment.objects.filter(pet__in=user_pets).order_by('-date')
-
     appointment_form = AppointmentBookingForm()
     appointment_form.fields['pet'].queryset = user_pets
 
     if request.method == 'POST':
         appointment_form = AppointmentBookingForm(request.POST)
         appointment_form.fields['pet'].queryset = user_pets
-        
+       
         if appointment_form.is_valid():
             chosen_date = appointment_form.cleaned_data.get('date')
             chosen_slot = appointment_form.cleaned_data.get('time_slot')
-            
+           
             daily_total = Appointment.objects.filter(date=chosen_date, status='Approved').count()
             slot_total = Appointment.objects.filter(date=chosen_date, time_slot=chosen_slot, status='Approved').count()
-            
+           
             if daily_total >= 200:
                 messages.error(request, f"The date {chosen_date} has reached the maximum limit of 200 patients.")
             elif slot_total >= 10:
@@ -154,38 +153,47 @@ def book_appointment_view(request):
 @login_required(login_url='login')
 @user_passes_test(is_staff_user, login_url='dashboard')
 def staff_dashboard_view(request):
-    search_query = request.GET.get('search', '')
     pending_appointments = Appointment.objects.filter(status='Pending').order_by('-date')
-    matched_pets = Pet.objects.none()
 
-    if search_query:
-        pending_appointments = pending_appointments.filter(
-            Q(pet__name__icontains=search_query) | 
-            Q(pet__owner_name__icontains=search_query) |
-            Q(date__icontains=search_query)
-        )
-        matched_pets = Pet.objects.filter(
-            Q(name__icontains=search_query) | 
-            Q(owner_name__icontains=search_query) |
-            Q(species__icontains=search_query)
-        )
+    # Database Metrics for Dashboard Cards
+    total_pets = Pet.objects.count()
+    total_appointments = Appointment.objects.count()
+    total_pending = Appointment.objects.filter(status='Pending').count()
+    total_approved = Appointment.objects.filter(status='Approved').count()
+
+    # Pass approved appointments data into JSON format for the interactive Calendar View
+    approved_appts = Appointment.objects.filter(status='Approved').select_related('pet')
+    calendar_events = []
+    for appt in approved_appts:
+        calendar_events.append({
+            'date': str(appt.date),
+            'pet_name': appt.pet.name,
+            'species': appt.pet.species,
+            'owner_name': appt.pet.owner_name,
+            'time_slot': appt.time_slot,
+            'reason': appt.reason
+        })
 
     return render(request, 'pets/staff_dashboard.html', {
         'pending_appointments': pending_appointments,
-        'matched_pets': matched_pets,
-        'search_query': search_query
+        'total_pets': total_pets,
+        'total_appointments': total_appointments,
+        'total_pending': total_pending,
+        'total_approved': total_approved,
+        'calendar_events_json': json.dumps(calendar_events)
     })
 
 @login_required(login_url='login')
 @user_passes_test(is_staff_user, login_url='dashboard')
 def staff_pets_view(request):
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('search', '').strip()
     pets = Pet.objects.all().order_by('-registered_at')
 
     if search_query:
         pets = pets.filter(
-            Q(name__icontains=search_query) | 
-            Q(owner_name__icontains=search_query)
+            Q(name__icontains=search_query) |
+            Q(owner_name__icontains=search_query) |
+            Q(species__icontains=search_query)
         )
 
     return render(request, 'pets/staff_pets.html', {
@@ -196,20 +204,26 @@ def staff_pets_view(request):
 @login_required(login_url='login')
 @user_passes_test(is_staff_user, login_url='dashboard')
 def staff_appointments_view(request):
-    search_date = request.GET.get('date', '')
-    status_filter = request.GET.get('status', '')
+    search_query = request.GET.get('search', '').strip()
+    status_filter = request.GET.get('status', '').strip()
 
-    appointments = Appointment.objects.none()
+    appointments = Appointment.objects.all().order_by('-date')
 
-    if search_date:
-        appointments = Appointment.objects.filter(date=search_date)
-        if status_filter:
-            appointments = appointments.filter(status__iexact=status_filter)
-        appointments = appointments.order_by('-date')
+    if search_query:
+        appointments = appointments.filter(
+            Q(pet__name__icontains=search_query) |
+            Q(pet__owner_name__icontains=search_query) |
+            Q(date__icontains=search_query) |
+            Q(time_slot__icontains=search_query) |
+            Q(reason__icontains=search_query)
+        )
+
+    if status_filter:
+        appointments = appointments.filter(status__iexact=status_filter)
 
     return render(request, 'pets/staff_appointments.html', {
         'appointments': appointments,
-        'search_date': search_date,
+        'search_query': search_query,
         'status_filter': status_filter
     })
 
@@ -218,7 +232,7 @@ def staff_appointments_view(request):
 def approve_appointment_view(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     slot_total = Appointment.objects.filter(date=appointment.date, time_slot=appointment.time_slot, status='Approved').count()
-    
+   
     if slot_total >= 10:
         messages.error(request, f"Cannot approve. The {appointment.time_slot} slot on {appointment.date} reached max 10 limit.")
     else:

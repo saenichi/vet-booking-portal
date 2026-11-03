@@ -2,34 +2,33 @@
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-12 bg-white border rounded shadow-sm p-4 text-center">
-        <h1 class="fw-bold text-dark mb-1">Appointment Records</h1>
-        <p class="text-muted small mb-4">Select a date and status below to search appointment records.</p>
-        
-        <div class="row justify-content-center">
-            <div class="col-md-9">
-                <form method="GET" action="{% url 'staff_appointments' %}" class="d-flex gap-2 justify-content-center">
-                    <input type="date" name="date" class="form-control" value="{{ search_date }}" required>
-                    <select name="status" class="form-select" required>
-                        <option value="" disabled selected>Select Status</option>
-                        <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
-                        <option value="Approved" {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
-                    </select>
-                    <button type="submit" class="btn btn-dark fw-bold px-4">Search</button>
-                    {% if search_date or status_filter %}
-                        <a href="{% url 'staff_appointments' %}" class="btn btn-outline-secondary">Reset</a>
-                    {% endif %}
-                </form>
+    <div class="col-12 bg-white border rounded shadow-sm p-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Appointment Records</h2>
+                <p class="text-muted small mb-0">Search and audit appointment schedules across the platform.</p>
             </div>
+            <!-- Search & Filter Form -->
+            <form method="GET" action="{% url 'staff_appointments' %}" class="d-flex gap-2" style="max-width: 480px; width: 100%;">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search pet, owner, date..." value="{{ search_query }}">
+                <select name="status" class="form-select form-select-sm" style="max-width: 140px;">
+                    <option value="">All Status</option>
+                    <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Approved" {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
+                </select>
+                <button type="submit" class="btn btn-dark btn-sm fw-bold px-3">Search</button>
+                {% if search_query or status_filter %}
+                    <a href="{% url 'staff_appointments' %}" class="btn btn-outline-secondary btn-sm">Reset</a>
+                {% endif %}
+            </form>
         </div>
     </div>
 </div>
 
-{% if search_date %}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm p-4 bg-white">
-            <h4 class="fw-bold text-dark mb-3 border-bottom pb-2">Appointment Records for {{ search_date }}</h4>
+            <h4 class="fw-bold text-dark mb-3 border-bottom pb-2">Appointment Directory</h4>
             <div class="table-responsive">
                 <table class="table align-middle mb-0">
                     <thead class="table-light">
@@ -44,7 +43,7 @@
                     <tbody>
                         {% for appt in appointments %}
                             <tr>
-                                <td class="fw-bold text-dark">{{ appt.pet.name }} <span class="text-muted fw-normal">({{ appt.pet.species }})</span></td>
+                                <td class="fw-bold text-primary">{{ appt.pet.name }} <br><small class="text-muted fw-normal">({{ appt.pet.species }})</small></td>
                                 <td>{{ appt.pet.owner_name }}</td>
                                 <td>{{ appt.date }} <br><small class="text-muted">{{ appt.time_slot }}</small></td>
                                 <td>{{ appt.reason }}</td>
@@ -56,7 +55,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-3">No appointment records found matching criteria.</td>
+                                <td colspan="5" class="text-center text-muted py-4">No appointment records found matching criteria.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -65,5 +64,4 @@
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock %}
