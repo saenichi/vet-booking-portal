@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-fdj_=!49=@gtataitk8m8ze9953)c2^t@hj#0n8*!ukez4-p2e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vetoasisclinic.space', 'www.vetoasisclinic.space', '.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
