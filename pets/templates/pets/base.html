@@ -47,8 +47,9 @@
         }
         .sidebar.minimized .brand-text,
         .sidebar.minimized .sidebar-item span,
-        .sidebar.minimized .sidebar-menu-title {
-            display: none;
+        .sidebar.minimized .sidebar-menu-title,
+        .sidebar.minimized .submenu-container {
+            display: none !important;
         }
         .sidebar-menu {
             padding: 1rem;
@@ -83,6 +84,37 @@
             font-size: 1.2rem;
             flex-shrink: 0;
         }
+
+        /* Hover-to-Reveal Submenu Styling */
+        .has-submenu {
+            position: relative;
+        }
+        .submenu-container {
+            display: none;
+            padding-left: 0.5rem;
+            background-color: #ffffff;
+        }
+        /* Show submenu on hover of the parent container */
+        .has-submenu:hover .submenu-container {
+            display: block;
+        }
+
+        .submenu-item {
+            display: block;
+            padding: 0.4rem 1rem 0.4rem 2.8rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: color 0.2s, background-color 0.2s;
+            white-space: nowrap;
+        }
+        .submenu-item:hover, .submenu-item.active {
+            color: #0d6efd;
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
         /* Main Content Wrapper */
         .main-content {
             margin-left: 260px;
@@ -94,7 +126,6 @@
         .main-content.expanded {
             margin-left: 78px;
         }
-        /* When user is NOT authenticated, take full width for true centering */
         .main-content.full-width {
             margin-left: 0 !important;
         }
@@ -111,15 +142,6 @@
             top: 0;
             z-index: 1040;
         }
-        .form-control, .form-select {
-            border-radius: 0.375rem;
-            border-color: #ced4da;
-        }
-        .form-control:focus, .form-select:focus {
-            box-shadow: none;
-            border-color: #0d6efd;
-        }
-
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -132,6 +154,9 @@
             .sidebar.mobile-show .sidebar-item span,
             .sidebar.mobile-show .sidebar-menu-title {
                 display: inline !important;
+            }
+            .sidebar.mobile-show .submenu-container {
+                display: block !important;
             }
             .main-content {
                 margin-left: 0 !important;
@@ -186,6 +211,23 @@
                     <i class="bi bi-calendar-plus-fill"></i>
                     <span>Book Visit</span>
                 </a>
+
+                <!-- Services Menu with Hover-to-Reveal Submenu -->
+                <div class="has-submenu">
+                    <a href="{% url 'services' %}" class="sidebar-item {% if request.resolver_match.url_name == 'services' %}active{% endif %}" title="Services">
+                        <i class="bi bi-hospital-fill"></i>
+                        <span>Services</span>
+                    </a>
+                    <div class="submenu-container py-1">
+                        <a href="{% url 'services' %}#general" class="submenu-item">General Veterinary</a>
+                        <a href="{% url 'services' %}#handling" class="submenu-item">Low Stress Handling</a>
+                        <a href="{% url 'services' %}#vaccinations" class="submenu-item">Vaccinations</a>
+                        <a href="{% url 'services' %}#surgery" class="submenu-item">Surgery</a>
+                        <a href="{% url 'services' %}#acupuncture" class="submenu-item">Acupuncture</a>
+                        <a href="{% url 'services' %}#rehabilitation" class="submenu-item">Rehabilitation</a>
+                    </div>
+                </div>
+
                 <a href="{% url 'contact_us' %}" class="sidebar-item {% if request.resolver_match.url_name == 'contact_us' %}active{% endif %}" title="Contact Us">
                     <i class="bi bi-geo-alt-fill"></i>
                     <span>Contact Us</span>
@@ -198,7 +240,6 @@
     <!-- Main Content Area -->
     <div class="main-content {% if not user.is_authenticated %}full-width{% endif %}" id="mainContent">
         {% if user.is_authenticated %}
-        <!-- Top Navbar -->
         <header class="top-navbar shadow-sm">
             <div class="d-flex align-items-center gap-2">
                 <button class="btn btn-light border text-secondary p-2 d-lg-none" onclick="toggleMobileSidebar()" title="Open Menu">
@@ -214,7 +255,7 @@
                     </div>
                     <div class="text-start d-none d-sm-block">
                         <span class="d-block fw-bold text-dark lh-1" style="font-size: 0.9rem;">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}</span>
-                        <span class="text-muted" style="font-size: 0.75rem;">{% if user.is_staff %}Staff Administrator{% else %}Pet Owner{% endif %}</span>
+                        <span class="text-muted" style="font-size: 0.75rem;">Pet Owner</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2 mt-2" aria-labelledby="userDropdown" style="min-width: 200px;">
@@ -227,7 +268,7 @@
         </header>
         {% endif %}
 
-        <div class="container-fluid p-3 p-md-4 my-2 d-flex flex-column flex-grow-1 justify-content-center">
+        <div class="container-fluid p-3 p-md-4 my-2 d-flex flex-column flex-grow-1">
             {% block content %}
             {% endblock %}
         </div>

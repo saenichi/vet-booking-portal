@@ -244,3 +244,9 @@ def approve_appointment_view(request, pk):
 @login_required(login_url='login')
 def contact_us_view(request):
     return render(request, 'pets/contact.html')
+
+@login_required(login_url='login')
+def services_view(request):
+    if request.user.is_staff:
+        return redirect('staff_dashboard')
+    return render(request, 'pets/services.html')

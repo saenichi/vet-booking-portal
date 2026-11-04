@@ -14,4 +14,5 @@ urlpatterns = [
     path('staff-portal/appointments/', views.staff_appointments_view, name='staff_appointments'),
     path('approve/<int:pk>/', views.approve_appointment_view, name='approve_appointment'),
     path('contact/', views.contact_us_view, name='contact_us'),
+    path('services/', views.services_view, name='services'),
 ]

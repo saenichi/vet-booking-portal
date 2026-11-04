@@ -1,0 +1,124 @@
+{% extends 'pets/base.html' %}
+
+{% block content %}
+<style>
+    /* Smooth scroll for anchor links */
+    html {
+        scroll-behavior: smooth;
+    }
+    /* Add scroll margin so section headers aren't covered by fixed elements */
+    .service-section {
+        scroll-margin-top: 90px;
+        padding-top: 1.5rem;
+        padding-bottom: 2.5rem;
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4 mb-5">
+            
+            <!-- Main Header -->
+            <div class="border-bottom pb-4 mb-5">
+                <h2 class="fw-bold text-dark mb-2">Our Veterinary Services</h2>
+                <p class="text-muted mb-0">Comprehensive, compassionate care tailored to your pet's health and wellness.</p>
+            </div>
+
+            <!-- 1. General Veterinary Services -->
+            <section id="general" class="service-section">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-journal-medical fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">General Veterinary Services</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-3">
+                    We are a full-service veterinary hospital offering optimal wellness care including a comprehensive physical exam, a vaccine schedule tailored to your pet's lifestyle, wellness blood testing from our in-house lab machines to check internal health, intestinal parasite checks, and heartworm checks. Our experienced doctors and staff can assist you in addressing behavioral questions. In fact, we believe that both physical and mental health are vital components to a healthy overall quality of life.
+                </p>
+                <p class="text-secondary leading-relaxed fs-6 mb-3">
+                    Our other in-house services include digital radiography, urinalysis, blood pressure checks/monitoring, blood checks including a CBC (complete blood count), thyroid checks, and complete blood chemistries which give us a window into your pet's internal health as well as the ability to offer quick treatment solutions for your sick pets!
+                </p>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    We have a full pharmacy including supplements and Chinese herbs to better serve your pet's needs. We also offer nutritional counseling/consults including guidance for non-traditional diets or homemade diets.
+                </p>
+            </section>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <!-- 2. Low Stress Handling -->
+            <section id="handling" class="service-section">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-heart-pulse fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">Low Stress Handling</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    We understand that vet visits can be stressful for both pets and owners. Our clinic implements certified Low Stress Handling techniques to minimize anxiety, promote calm behavior, and ensure your pet feels safe, respected, and comfortable during exams and treatments.
+                </p>
+            </section>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <!-- 3. Vaccinations -->
+            <section id="vaccinations" class="service-section">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-shield-check fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">Vaccinations</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    Prevention is the key to a long and healthy life. We design customized vaccination protocols based on your pet's specific age, lifestyle, geographic risk factors, and health history to protect them safely against preventable infectious diseases.
+                </p>
+            </section>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <!-- 4. Surgery -->
+            <section id="surgery" class="service-section">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-bandaid fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">Surgery</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    From routine spays and neuters to advanced soft tissue procedures, our surgical suite is equipped with modern monitoring equipment. Our experienced surgical team prioritizes rigorous pain management, sterile techniques, and attentive post-operative monitoring.
+                </p>
+            </section>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <!-- 5. Acupuncture -->
+            <section id="acupuncture" class="service-section">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-activity fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">Acupuncture</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    Integrated veterinary medicine offers incredible holistic benefits. Our veterinary acupuncture services help manage chronic pain, arthritis, neurological conditions, and post-surgical recovery by stimulating natural healing responses and improving mobility.
+                </p>
+            </section>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <!-- 6. Rehabilitation -->
+            <section id="rehabilitation" class="service-section mb-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                        <i class="bi bi-lightning-charge fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-0">Rehabilitation</h3>
+                </div>
+                <p class="text-secondary leading-relaxed fs-6 mb-0">
+                    Our rehabilitation center helps pets recover strength, flexibility, and function following injuries or orthopedic surgeries. Utilizing targeted physical therapies, exercises, and conditioning modalities, we help your pets get back on track to living an active life.
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
