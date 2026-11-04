@@ -1,32 +1,101 @@
 {% extends 'pets/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card border border-dark shadow-none bg-white rounded-0">
-            <div class="card-header bg-black text-white fw-bold text-center py-3 rounded-0">Portal Login</div>
-            <div class="card-body p-4">
-                <form method="POST">
-                    {% csrf_token %}
-                    
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="text-danger small mt-1">{{ field.errors }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
-                    <button type="submit" class="btn btn-dark w-100 fw-bold mt-2 rounded-0">Login</button>
-                </form>
-                
-                <div class="text-center mt-3">
-                    <small class="text-muted">Don't have an account? <a href="{% url 'register' %}" class="text-dark fw-bold text-decoration-underline">Register here</a></small>
+<div class="row justify-content-center align-items-center w-100 m-0">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+            <div class="text-center mb-4">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-heart-pulse-fill fs-3"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">Welcome Back</h3>
+                <p class="text-muted small">Sign in to Vet Oasis Portal</p>
+            </div>
+
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small mb-3">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-muted">
+                            {{ field.label }} <span class="text-danger">*</span>
+                        </label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm rounded-3 mt-3 mb-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-3 pt-3 border-top">
+                <p class="text-muted small mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-primary fw-bold text-decoration-none">Register here</a></p>
             </div>
         </div>
+
     </div>
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        // Automatically add form-control styling to Django inputs
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('form-control');
+            }
+        });
+
+        // Add Eye Icon toggle to Password fields
+        const passwordFields = document.querySelectorAll('input[type="password"]');
+        passwordFields.forEach((field, index) => {
+            field.classList.add('border-end-0');
+            
+            if (!field.parentNode.classList.contains('input-group')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'input-group';
+                field.parentNode.insertBefore(wrapper, field);
+                wrapper.appendChild(field);
+
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-secondary bg-light border-start-0 text-muted';
+                btn.type = 'button';
+                btn.innerHTML = `<i class="bi bi-eye-slash" id="loginEye_${index}"></i>`;
+                
+                btn.onclick = function() {
+                    if (field.type === "password") {
+                        field.type = "text";
+                        document.getElementById(`loginEye_${index}`).className = "bi bi-eye";
+                    } else {
+                        field.type = "password";
+                        document.getElementById(`loginEye_${index}`).className = "bi bi-eye-slash";
+                    }
+                };
+                wrapper.appendChild(btn);
+            }
+        });
+    });
+</script>
 {% endblock %}

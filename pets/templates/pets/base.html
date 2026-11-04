@@ -15,7 +15,7 @@
             color: #212529;
             overflow-x: hidden;
         }
-        /* Gemini-Style Sidebar with Minimize Capability */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
@@ -27,7 +27,7 @@
             display: flex;
             flex-direction: column;
             z-index: 1050;
-            transition: width 0.3s ease;
+            transition: width 0.3s ease, transform 0.3s ease;
         }
         .sidebar.minimized {
             width: 78px;
@@ -94,15 +94,19 @@
         .main-content.expanded {
             margin-left: 78px;
         }
-        /* Top Navbar with Upper-Right Dropdown */
+        /* When user is NOT authenticated, take full width for true centering */
+        .main-content.full-width {
+            margin-left: 0 !important;
+        }
+        /* Top Navbar */
         .top-navbar {
             height: 70px;
             background-color: #ffffff;
             border-bottom: 1px solid #e5e7eb;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 1040;
@@ -115,20 +119,41 @@
             box-shadow: none;
             border-color: #0d6efd;
         }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.mobile-show {
+                transform: translateX(0);
+                width: 260px !important;
+            }
+            .sidebar.mobile-show .brand-text,
+            .sidebar.mobile-show .sidebar-item span,
+            .sidebar.mobile-show .sidebar-menu-title {
+                display: inline !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     {% if user.is_authenticated %}
-    <!-- Gemini-Style Sidebar with Manual Toggle Button -->
+    <!-- Sidebar -->
     <nav class="sidebar shadow-sm" id="appSidebar">
         <div class="sidebar-brand">
             <div class="d-flex align-items-center gap-2 overflow-hidden">
                 <i class="bi bi-heart-pulse-fill fs-3 text-primary flex-shrink-0"></i>
                 <span class="fs-5 text-dark fw-bold brand-text">Vet Oasis</span>
             </div>
-            <button class="btn btn-sm btn-light border text-secondary p-1" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <button class="btn btn-sm btn-light border text-secondary p-1 d-none d-lg-block" onclick="toggleSidebar()" title="Toggle Sidebar">
                 <i class="bi bi-list fs-5"></i>
+            </button>
+            <button class="btn btn-sm btn-light border text-secondary p-1 d-lg-none" onclick="toggleMobileSidebar()" title="Close Menu">
+                <i class="bi bi-x fs-5"></i>
             </button>
         </div>
 
@@ -171,10 +196,17 @@
     {% endif %}
 
     <!-- Main Content Area -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content {% if not user.is_authenticated %}full-width{% endif %}" id="mainContent">
         {% if user.is_authenticated %}
-        <!-- Top Navbar with Upper-Right Dropdown Profile & Logout -->
+        <!-- Top Navbar -->
         <header class="top-navbar shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-light border text-secondary p-2 d-lg-none" onclick="toggleMobileSidebar()" title="Open Menu">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <span class="fw-bold text-primary d-lg-none">Vet Oasis</span>
+            </div>
+
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle gap-2" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px;">
@@ -186,9 +218,7 @@
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2 mt-2" aria-labelledby="userDropdown" style="min-width: 200px;">
-                    <li>
-                        <h6 class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Account Management</h6>
-                    </li>
+                    <li><h6 class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Account Management</h6></li>
                     <li><a class="dropdown-item py-2" href="{% url 'profile_update' %}"><i class="bi bi-gear-fill me-2 text-primary"></i> Update Profile</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item py-2 text-danger fw-semibold" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a></li>
@@ -197,13 +227,13 @@
         </header>
         {% endif %}
 
-        <div class="container-fluid p-4 my-2">
+        <div class="container-fluid p-3 p-md-4 my-2 d-flex flex-column flex-grow-1 justify-content-center">
             {% block content %}
             {% endblock %}
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle & Sidebar Persistence Logic -->
+    <!-- Bootstrap JS Bundle & Responsive Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
@@ -216,11 +246,20 @@
             localStorage.setItem('sidebarMinimized', isMinimized);
         }
 
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            sidebar.classList.toggle('mobile-show');
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const isMinimized = localStorage.getItem('sidebarMinimized') === 'true';
-            if (isMinimized) {
-                document.getElementById('appSidebar').classList.add('minimized');
-                document.getElementById('mainContent').classList.add('expanded');
+            if (isMinimized && window.innerWidth > 992) {
+                const sidebar = document.getElementById('appSidebar');
+                const mainContent = document.getElementById('mainContent');
+                if (sidebar && mainContent) {
+                    sidebar.classList.add('minimized');
+                    mainContent.classList.add('expanded');
+                }
             }
         });
     </script>
